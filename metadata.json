@@ -1,0 +1,9 @@
+
+{
+  "name": "함수 그래프 AI 도우미 (Function Graph AI Helper)",
+  "description": "",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "prompt": ""
+}
