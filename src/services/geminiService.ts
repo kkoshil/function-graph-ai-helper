@@ -1,12 +1,14 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import type { FunctionAnalysis } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set. Please set it as a secret in your deployment environment.");
+// Vite's standard way to access environment variables
+const apiKey = import.meta.env.VITE_API_KEY;
+
+if (!apiKey) {
+    throw new Error("VITE_API_KEY environment variable not set. Please set it in your Vercel deployment settings.");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey });
 
 const responseSchema = {
   type: Type.OBJECT,
