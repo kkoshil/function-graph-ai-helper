@@ -86,7 +86,7 @@ const App: React.FC = () => {
   const [analysisResult, setAnalysisResult] = useState<FunctionAnalysis | null>(null);
   const [plotPoints, setPlotPoints] = useState<PlotPoint[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [inputValue, setInputValue] = useState<string>('x^2 - 2*x + 1');
+  const [inputValue, setInputValue] = useState<string>('');
   const [isInitialAnalysisPending, setIsInitialAnalysisPending] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -221,15 +221,15 @@ const App: React.FC = () => {
         math.parse(processedExpression);
       } catch (validationError) {
         console.error("Validation Error:", validationError);
-        setError(`유효하지 않은 함수식입니다. 수식을 확인해주세요. (예: 2x는 2*x, 괄호 확인)`);
+        setError(`유효하지 않은 함수식입니다. 수식을 확인해주세요. (예: 2x는 2*x, root(x) 등)`);
         setIsLoading(false);
         return;
       }
-
-      const result = await analyzeFunction(processedExpression);
-      setAnalysisResult(result);
       
-      const expressionForGraphing = processedExpression;
+      const result = await analyzeFunction(processedExpression);
+      
+      const expressionForGraphing = preprocessExpression(result.function);
+      setAnalysisResult({...result, function: expressionForGraphing});
 
       if (result.suggestedPlotRange) {
         const points = generatePoints(expressionForGraphing, result.suggestedPlotRange);
@@ -301,7 +301,7 @@ const App: React.FC = () => {
       expression: expression,
       date: new Date().toLocaleDateString('ko-KR'),
     };
-    setHistory(prev => [newEntry, ...prev]);
+    setHistory(prev => [newEntry, ...prev].slice(0, 10)); // Keep max 10 history items
     setToastMessage('다시 보기에 저장되었습니다.');
   }, [history]);
 
@@ -312,9 +312,12 @@ const App: React.FC = () => {
 
   const handleLoadFromHistory = useCallback((expression: string) => {
     setInputValue(expression);
-    setIsInitialAnalysisPending(true);
+    // Use a timeout to ensure the state update is processed before triggering analysis
+    setTimeout(() => {
+        handleAnalyze();
+    }, 0);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+  }, [handleAnalyze]);
 
 
   return (
@@ -333,7 +336,7 @@ const App: React.FC = () => {
               isRecording={isRecording}
               isLoading={isLoading}
             />
-            <HistoryCard 
+             <HistoryCard 
                 history={history}
                 onLoad={handleLoadFromHistory}
                 onDelete={handleDeleteFromHistory}

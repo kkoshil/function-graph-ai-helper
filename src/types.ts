@@ -16,7 +16,7 @@ export interface AnalysisDetails {
 
 export interface PracticeProblem {
   question: string;
-  answer: string;
+  answer:string;
 }
 
 export interface SuggestedPlotRange {
@@ -29,4 +29,10 @@ export interface FunctionAnalysis {
   suggestedPlotRange: SuggestedPlotRange;
   analysis: AnalysisDetails;
   practiceProblem: PracticeProblem;
+}
+
+export interface HistoryEntry {
+  id: string;
+  expression: string;
+  date: string;
 }
