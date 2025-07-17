@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { create, all } from 'mathjs';
 import { Header } from './components/Header';
@@ -86,37 +87,40 @@ const App: React.FC = () => {
   const [plotPoints, setPlotPoints] = useState<PlotPoint[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>('x^2 - 2*x + 1');
+  const [isInitialAnalysisPending, setIsInitialAnalysisPending] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [isInitialAnalysisPending, setIsInitialAnalysisPending] = useState(false);
+
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const isInitialMount = useRef(true);
 
-  // Load history from localStorage on initial mount
   useEffect(() => {
     try {
-      const savedHistory = localStorage.getItem('function-history');
+      const savedHistory = localStorage.getItem('functionHistory');
       if (savedHistory) {
         setHistory(JSON.parse(savedHistory));
       }
-    } catch (e) {
-      console.error("Failed to load history from localStorage", e);
+    } catch (error) {
+      console.error("Could not load history from localStorage", error);
     }
   }, []);
 
-  // Save history to localStorage whenever it changes
   useEffect(() => {
-    if (isInitialMount.current) {
-        isInitialMount.current = false;
-        return;
-    }
     try {
-        localStorage.setItem('function-history', JSON.stringify(history));
-    } catch (e) {
-        console.error("Failed to save history to localStorage", e);
+      localStorage.setItem('functionHistory', JSON.stringify(history));
+    } catch (error) {
+      console.error("Could not save history to localStorage", error);
     }
   }, [history]);
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => {
+        setToastMessage(null);
+      }, 3000); // Hide after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -139,9 +143,14 @@ const App: React.FC = () => {
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[event.results.length - 1][0].transcript.trim();
         const mathTranscript = transcript
-          .replace(/엑스/g, 'x').replace(/와이/g, 'y').replace(/더하기/g, '+')
-          .replace(/빼기/g, '-').replace(/곱하기/g, '*').replace(/나누기/g, '/')
-          .replace(/는/g, '=').replace(/ /g, '');
+          .replace(/엑스/g, 'x')
+          .replace(/와이/g, 'y')
+          .replace(/더하기/g, '+')
+          .replace(/빼기/g, '-')
+          .replace(/곱하기/g, '*')
+          .replace(/나누기/g, '/')
+          .replace(/는/g, '=')
+          .replace(/ /g, '');
         setInputValue(mathTranscript);
         setIsRecording(false);
       };
@@ -152,7 +161,10 @@ const App: React.FC = () => {
         setIsRecording(false);
       };
       
-      recognition.onend = () => { setIsRecording(false); };
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
     }
   }, []);
   
@@ -161,16 +173,28 @@ const App: React.FC = () => {
     try {
         const node = math.parse(expression);
         const code = node.compile();
-        const step = (range.max - range.min) / 400;
+        
+        const step = (range.max - range.min) / 400; // Increased points for smoother curve
         const Y_AXIS_LIMIT = Math.max(20, Math.abs(range.min), Math.abs(range.max)) * 2;
+
         for (let x = range.min; x <= range.max; x += step) {
             let y: number | null;
             try {
                 const evaluatedY = code.evaluate({ x });
-                if (!Number.isFinite(evaluatedY)) y = null;
-                else if (Math.abs(evaluatedY) > Y_AXIS_LIMIT) y = null;
-                else y = parseFloat(evaluatedY.toFixed(4));
-            } catch(e) { y = null; }
+                if (!Number.isFinite(evaluatedY)) {
+                    y = null; // Mark as discontinuity for Infinity or NaN
+                } else if (Math.abs(evaluatedY) > Y_AXIS_LIMIT) {
+                    // If value exceeds a dynamic threshold, treat as discontinuity to prevent distorted graphs.
+                    y = null;
+                }
+                else {
+                    y = parseFloat(evaluatedY.toFixed(4));
+                }
+            } catch(e) {
+                // Some evaluations might throw an error (e.g. log(-1))
+                y = null;
+            }
+
             points.push({ x: parseFloat(x.toFixed(4)), y });
         }
         return points;
@@ -190,30 +214,35 @@ const App: React.FC = () => {
     setError(null);
     setAnalysisResult(null);
     setPlotPoints(null);
+
     try {
       const processedExpression = preprocessExpression(inputValue);
       try {
         math.parse(processedExpression);
       } catch (validationError) {
+        console.error("Validation Error:", validationError);
         setError(`유효하지 않은 함수식입니다. 수식을 확인해주세요. (예: 2x는 2*x, 괄호 확인)`);
         setIsLoading(false);
         return;
       }
+
       const result = await analyzeFunction(processedExpression);
       setAnalysisResult(result);
       
-      // AI가 반환하는 함수식 대신, 내부적으로 처리된(예: 'root'->'sqrt') 함수식을 사용해 그래프를 그립니다.
-      // 이렇게 하면 AI가 예상과 다른 형식의 함수식을 반환하더라도 그래프 렌더링이 안정적으로 이루어집니다.
       const expressionForGraphing = processedExpression;
 
       if (result.suggestedPlotRange) {
         const points = generatePoints(expressionForGraphing, result.suggestedPlotRange);
-        if(points.length > 0) setPlotPoints(points);
+        if(points.length > 0) {
+            setPlotPoints(points);
+        }
       } else {
         const fallbackRange = { min: -10, max: 10 };
         const points = generatePoints(expressionForGraphing, fallbackRange);
         setPlotPoints(points);
+        console.warn("AI did not provide a suggested plot range. Using default.");
       }
+
     } catch (e) {
       console.error(e);
       setError('분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
@@ -239,6 +268,7 @@ const App: React.FC = () => {
          setError('이미지에서 수식을 찾지 못했습니다. 다른 이미지를 사용해주세요.');
        }
     } catch (e) {
+      console.error(e);
       setError('이미지 분석 중 오류가 발생했습니다.');
     } finally {
       setIsProcessingInput(false);
@@ -247,11 +277,13 @@ const App: React.FC = () => {
 
   const handleVoiceToggle = useCallback(() => {
     if (!SpeechRecognitionAPI) {
-      setError('사용하시는 브라우저는 음성 인식을 지원하지 않습니다.');
+      setError('お使いのブラウザは音声認識をサポートしていません。');
       return;
     }
+    
     if (isRecording) {
       recognitionRef.current?.stop();
+      setIsRecording(false);
     } else {
       recognitionRef.current?.start();
       setIsRecording(true);
@@ -259,42 +291,31 @@ const App: React.FC = () => {
     }
   }, [isRecording]);
 
-  const showToast = (message: string) => {
-    setToastMessage(message);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3000);
-  };
-
   const handleSaveToHistory = useCallback((expression: string) => {
-    let isNew = false;
-    setHistory(prevHistory => {
-        if (prevHistory.some(item => item.expression === expression)) {
-            return prevHistory;
-        }
-        isNew = true;
-        const newEntry: HistoryEntry = {
-            id: new Date().toISOString(),
-            expression,
-            date: new Date().toLocaleDateString('ko-KR')
-        };
-        return [newEntry, ...prevHistory].slice(0, 20);
-    });
-
-    if (isNew) {
-      showToast('다시 보기에 저장되었습니다!');
+    if (history.some(item => item.expression === expression)) {
+      setToastMessage('이미 저장된 함수입니다.');
+      return;
     }
-  }, []);
+    const newEntry: HistoryEntry = {
+      id: Date.now().toString(),
+      expression: expression,
+      date: new Date().toLocaleDateString('ko-KR'),
+    };
+    setHistory(prev => [newEntry, ...prev]);
+    setToastMessage('다시 보기에 저장되었습니다.');
+  }, [history]);
 
   const handleDeleteFromHistory = useCallback((id: string) => {
-      setHistory(prevHistory => prevHistory.filter(item => item.id !== id));
+    setHistory(prev => prev.filter(item => item.id !== id));
+    setToastMessage('삭제되었습니다.');
   }, []);
 
   const handleLoadFromHistory = useCallback((expression: string) => {
-      setInputValue(expression);
-      setIsInitialAnalysisPending(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    setInputValue(expression);
+    setIsInitialAnalysisPending(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
 
   return (
     <div className="min-h-screen bg-slate-100/50 text-slate-800">
@@ -312,16 +333,16 @@ const App: React.FC = () => {
               isRecording={isRecording}
               isLoading={isLoading}
             />
-            {history.length > 0 && (
-                <HistoryCard
-                    history={history}
-                    onLoad={handleLoadFromHistory}
-                    onDelete={handleDeleteFromHistory}
-                />
-            )}
+            <HistoryCard 
+                history={history}
+                onLoad={handleLoadFromHistory}
+                onDelete={handleDeleteFromHistory}
+            />
             {error && <ErrorAlert message={error} />}
             {isLoading && (
-              <div className="flex justify-center items-center p-8 bg-white rounded-xl shadow-lg"> <Loader /> </div>
+              <div className="flex justify-center items-center p-8 bg-white rounded-xl shadow-lg">
+                <Loader />
+              </div>
             )}
             {analysisResult?.analysis && !isLoading &&(
               <AnalysisCard analysis={analysisResult.analysis} practiceProblem={analysisResult.practiceProblem} />
@@ -329,11 +350,11 @@ const App: React.FC = () => {
           </div>
           <div className="lg:col-span-8">
             {plotPoints && analysisResult ? (
-              <GraphCard
-                 functionExpression={analysisResult.function}
-                 data={plotPoints}
-                 onSaveToHistory={handleSaveToHistory}
-                 isSaved={history.some(item => item.expression === analysisResult.function)}
+              <GraphCard 
+                functionExpression={analysisResult.function} 
+                data={plotPoints}
+                onSaveToHistory={handleSaveToHistory}
+                isSaved={history.some(item => item.expression === analysisResult.function)}
               />
             ) : (
                 !isLoading && !error && <Welcome />
