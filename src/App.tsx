@@ -6,9 +6,11 @@ import { GraphCard } from './components/GraphCard';
 import { AnalysisCard } from './components/AnalysisCard';
 import { Loader } from './components/Loader';
 import { analyzeFunction, extractTextFromImage } from './services/geminiService';
-import type { FunctionAnalysis, PlotPoint } from './types';
+import type { FunctionAnalysis, PlotPoint, HistoryEntry } from './types';
 import { Welcome } from './components/Welcome';
 import { ErrorAlert } from './components/ErrorAlert';
+import { HistoryCard } from './components/HistoryCard';
+import { Toast } from './components/Toast';
 
 // --- Web Speech API Type Definitions ---
 // This is to add support for a non-standard API
@@ -68,16 +70,11 @@ declare global {
 const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
 const math = create(all);
 
-/**
- * Implicit multiplication cannot be parsed by math.js, so we need to preprocess it.
- * Example: 2x -> 2*x, (x-1)(x+1) -> (x-1)*(x+1), 5sin(x) -> 5*sin(x)
- * @param expr The user-provided expression.
- * @returns The preprocessed expression.
- */
 const preprocessExpression = (expr: string): string => {
   return expr
-    .replace(/(\d)([a-zA-Z(])/g, '$1*$2') // 2x -> 2*x | 2( -> 2*(
-    .replace(/\)([\w(])/g, ')*$1');      // )x -> )*x | )( -> )*(
+    .replace(/\broot\b/gi, 'sqrt') // 'root'를 math.js가 이해하는 'sqrt'로 변환 (대소문자 무시)
+    .replace(/(\d)([a-zA-Z(])/g, '$1*$2')
+    .replace(/\)([\w(])/g, ')*$1');
 };
 
 
@@ -89,9 +86,37 @@ const App: React.FC = () => {
   const [plotPoints, setPlotPoints] = useState<PlotPoint[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>('x^2 - 2*x + 1');
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isInitialAnalysisPending, setIsInitialAnalysisPending] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const isInitialMount = useRef(true);
+
+  // Load history from localStorage on initial mount
+  useEffect(() => {
+    try {
+      const savedHistory = localStorage.getItem('function-history');
+      if (savedHistory) {
+        setHistory(JSON.parse(savedHistory));
+      }
+    } catch (e) {
+      console.error("Failed to load history from localStorage", e);
+    }
+  }, []);
+
+  // Save history to localStorage whenever it changes
+  useEffect(() => {
+    if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+    }
+    try {
+        localStorage.setItem('function-history', JSON.stringify(history));
+    } catch (e) {
+        console.error("Failed to save history to localStorage", e);
+    }
+  }, [history]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -114,14 +139,9 @@ const App: React.FC = () => {
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[event.results.length - 1][0].transcript.trim();
         const mathTranscript = transcript
-          .replace(/엑스/g, 'x')
-          .replace(/와이/g, 'y')
-          .replace(/더하기/g, '+')
-          .replace(/빼기/g, '-')
-          .replace(/곱하기/g, '*')
-          .replace(/나누기/g, '/')
-          .replace(/는/g, '=')
-          .replace(/ /g, '');
+          .replace(/엑스/g, 'x').replace(/와이/g, 'y').replace(/더하기/g, '+')
+          .replace(/빼기/g, '-').replace(/곱하기/g, '*').replace(/나누기/g, '/')
+          .replace(/는/g, '=').replace(/ /g, '');
         setInputValue(mathTranscript);
         setIsRecording(false);
       };
@@ -132,10 +152,7 @@ const App: React.FC = () => {
         setIsRecording(false);
       };
       
-      recognition.onend = () => {
-        setIsRecording(false);
-      };
-
+      recognition.onend = () => { setIsRecording(false); };
     }
   }, []);
   
@@ -144,28 +161,16 @@ const App: React.FC = () => {
     try {
         const node = math.parse(expression);
         const code = node.compile();
-        
-        const step = (range.max - range.min) / 400; // Increased points for smoother curve
+        const step = (range.max - range.min) / 400;
         const Y_AXIS_LIMIT = Math.max(20, Math.abs(range.min), Math.abs(range.max)) * 2;
-
         for (let x = range.min; x <= range.max; x += step) {
             let y: number | null;
             try {
                 const evaluatedY = code.evaluate({ x });
-                if (!Number.isFinite(evaluatedY)) {
-                    y = null; // Mark as discontinuity for Infinity or NaN
-                } else if (Math.abs(evaluatedY) > Y_AXIS_LIMIT) {
-                    // If value exceeds a dynamic threshold, treat as discontinuity to prevent distorted graphs.
-                    y = null;
-                }
-                else {
-                    y = parseFloat(evaluatedY.toFixed(4));
-                }
-            } catch(e) {
-                // Some evaluations might throw an error (e.g. log(-1))
-                y = null;
-            }
-
+                if (!Number.isFinite(evaluatedY)) y = null;
+                else if (Math.abs(evaluatedY) > Y_AXIS_LIMIT) y = null;
+                else y = parseFloat(evaluatedY.toFixed(4));
+            } catch(e) { y = null; }
             points.push({ x: parseFloat(x.toFixed(4)), y });
         }
         return points;
@@ -185,36 +190,30 @@ const App: React.FC = () => {
     setError(null);
     setAnalysisResult(null);
     setPlotPoints(null);
-
     try {
-      // 1. Preprocess and Validate client-side first. This is deterministic and fast.
       const processedExpression = preprocessExpression(inputValue);
       try {
-        math.parse(processedExpression); // This will throw an error if the syntax is invalid
+        math.parse(processedExpression);
       } catch (validationError) {
-        console.error("Validation Error:", validationError);
         setError(`유효하지 않은 함수식입니다. 수식을 확인해주세요. (예: 2x는 2*x, 괄호 확인)`);
         setIsLoading(false);
         return;
       }
-
-      // 2. If valid, call AI for analysis. AI's role is now analysis, not validation.
       const result = await analyzeFunction(processedExpression);
-      
       setAnalysisResult(result);
-      if (result.suggestedPlotRange) {
-        const points = generatePoints(result.function, result.suggestedPlotRange);
-        if(points.length > 0) {
-            setPlotPoints(points);
-        }
-      } else {
-        // Fallback in case AI doesn't return a range
-        const fallbackRange = { min: -10, max: 10 };
-        const points = generatePoints(result.function, fallbackRange);
-        setPlotPoints(points);
-        console.warn("AI did not provide a suggested plot range. Using default.");
-      }
+      
+      // AI가 반환하는 함수식 대신, 내부적으로 처리된(예: 'root'->'sqrt') 함수식을 사용해 그래프를 그립니다.
+      // 이렇게 하면 AI가 예상과 다른 형식의 함수식을 반환하더라도 그래프 렌더링이 안정적으로 이루어집니다.
+      const expressionForGraphing = processedExpression;
 
+      if (result.suggestedPlotRange) {
+        const points = generatePoints(expressionForGraphing, result.suggestedPlotRange);
+        if(points.length > 0) setPlotPoints(points);
+      } else {
+        const fallbackRange = { min: -10, max: 10 };
+        const points = generatePoints(expressionForGraphing, fallbackRange);
+        setPlotPoints(points);
+      }
     } catch (e) {
       console.error(e);
       setError('분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
@@ -240,7 +239,6 @@ const App: React.FC = () => {
          setError('이미지에서 수식을 찾지 못했습니다. 다른 이미지를 사용해주세요.');
        }
     } catch (e) {
-      console.error(e);
       setError('이미지 분석 중 오류가 발생했습니다.');
     } finally {
       setIsProcessingInput(false);
@@ -252,10 +250,8 @@ const App: React.FC = () => {
       setError('사용하시는 브라우저는 음성 인식을 지원하지 않습니다.');
       return;
     }
-    
     if (isRecording) {
       recognitionRef.current?.stop();
-      setIsRecording(false);
     } else {
       recognitionRef.current?.start();
       setIsRecording(true);
@@ -263,6 +259,42 @@ const App: React.FC = () => {
     }
   }, [isRecording]);
 
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
+
+  const handleSaveToHistory = useCallback((expression: string) => {
+    let isNew = false;
+    setHistory(prevHistory => {
+        if (prevHistory.some(item => item.expression === expression)) {
+            return prevHistory;
+        }
+        isNew = true;
+        const newEntry: HistoryEntry = {
+            id: new Date().toISOString(),
+            expression,
+            date: new Date().toLocaleDateString('ko-KR')
+        };
+        return [newEntry, ...prevHistory].slice(0, 20);
+    });
+
+    if (isNew) {
+      showToast('다시 보기에 저장되었습니다!');
+    }
+  }, []);
+
+  const handleDeleteFromHistory = useCallback((id: string) => {
+      setHistory(prevHistory => prevHistory.filter(item => item.id !== id));
+  }, []);
+
+  const handleLoadFromHistory = useCallback((expression: string) => {
+      setInputValue(expression);
+      setIsInitialAnalysisPending(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-100/50 text-slate-800">
@@ -280,11 +312,16 @@ const App: React.FC = () => {
               isRecording={isRecording}
               isLoading={isLoading}
             />
+            {history.length > 0 && (
+                <HistoryCard
+                    history={history}
+                    onLoad={handleLoadFromHistory}
+                    onDelete={handleDeleteFromHistory}
+                />
+            )}
             {error && <ErrorAlert message={error} />}
             {isLoading && (
-              <div className="flex justify-center items-center p-8 bg-white rounded-xl shadow-lg">
-                <Loader />
-              </div>
+              <div className="flex justify-center items-center p-8 bg-white rounded-xl shadow-lg"> <Loader /> </div>
             )}
             {analysisResult?.analysis && !isLoading &&(
               <AnalysisCard analysis={analysisResult.analysis} practiceProblem={analysisResult.practiceProblem} />
@@ -292,7 +329,12 @@ const App: React.FC = () => {
           </div>
           <div className="lg:col-span-8">
             {plotPoints && analysisResult ? (
-              <GraphCard functionExpression={analysisResult.function} data={plotPoints} />
+              <GraphCard
+                 functionExpression={analysisResult.function}
+                 data={plotPoints}
+                 onSaveToHistory={handleSaveToHistory}
+                 isSaved={history.some(item => item.expression === analysisResult.function)}
+              />
             ) : (
                 !isLoading && !error && <Welcome />
             )}
@@ -302,6 +344,7 @@ const App: React.FC = () => {
       <footer className="text-center p-4 text-sm text-slate-500 mt-8">
         <p>&copy; {new Date().getFullYear()} 함수 그래프 AI 도우미. All Rights Reserved.</p>
       </footer>
+      <Toast message={toastMessage} />
     </div>
   );
 };
