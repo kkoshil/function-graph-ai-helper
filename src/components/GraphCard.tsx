@@ -1,83 +1,165 @@
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
+import type { PlotPoint } from '../types';
+import { DownloadIcon, FilePdfIcon, LinkIcon, BookmarkIcon } from './icons';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
-export const ChartIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M3 3v18h18" />
-    <path d="m19 9-5 5-4-4-3 3" />
-  </svg>
+interface GraphCardProps {
+  functionExpression: string;
+  data: PlotPoint[];
+  onSaveToHistory: (expression: string) => void;
+  isSaved: boolean;
+}
+
+const ActionButton: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  className?: string;
+}> = ({ icon, label, onClick, disabled, className }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-md hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:cursor-wait ${className}`}
+      aria-label={label}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
 );
 
-export const MagicWandIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M15 4V2" />
-    <path d="M15 10V8" />
-    <path d="M12.3 6.7 11 5.3" />
-    <path d="M17.7 6.7 19 5.3" />
-    <path d="M5 12H3" />
-    <path d="M21 12H19" />
-    <path d="m12.3 17.7-1.4-1.4" />
-    <path d="m19 18.7-1.3-1.4" />
-    <path d="M9 4V2" />
-    <path d="M9 10V8" />
-    <path d="m6.3 6.7-1.4-1.4" />
-    <path d="M9 18v2" />
-    <path d="M15 18v2" />
-    <path d="m6.3 17.7 1.4-1.4" />
-    <path d="M3.5 14.5 2 16l6 6 4-4 6 6 1.5-1.5-6-6-4 4-6-6Z" />
-  </svg>
-);
 
-export const CameraIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
-);
+const GraphCard: React.FC<GraphCardProps> = ({ functionExpression, data, onSaveToHistory, isSaved }) => {
+  const graphRef = useRef<HTMLDivElement>(null);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-export const MicIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
-);
+  const handleSaveAsPng = async () => {
+    if (!graphRef.current || isSaving) return;
+    setIsSaving(true);
+    try {
+        const canvas = await html2canvas(graphRef.current, { 
+            backgroundColor: '#ffffff', 
+            useCORS: true,
+            logging: false,
+            scale: 2 // Higher resolution
+        });
+        const link = document.createElement('a');
+        link.download = `graph_${functionExpression.replace(/[^a-z0-9]/gi, '_')}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch(err) {
+        console.error("Failed to save as PNG", err);
+        alert('이미지 저장에 실패했습니다.');
+    } finally {
+        setIsSaving(false);
+    }
+  };
 
-export const TextIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M17 6.1H3"></path><path d="M21 12.1H3"></path><path d="M15.1 18.1H3"></path></svg>
-);
+  const handleSaveAsPdf = async () => {
+      if (!graphRef.current || isSaving) return;
+      setIsSaving(true);
+      try {
+          const canvas = await html2canvas(graphRef.current, { 
+              backgroundColor: '#ffffff',
+              useCORS: true,
+              logging: false,
+              scale: 2
+          });
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF({
+              orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+              unit: 'px',
+              format: [canvas.width, canvas.height]
+          });
+          pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+          pdf.save(`graph_${functionExpression.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+      } catch(err) {
+          console.error("Failed to save as PDF", err);
+          alert('PDF 저장에 실패했습니다.');
+      } finally {
+          setIsSaving(false);
+      }
+  };
 
-export const DownloadIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-);
+  const handleCopyLink = () => {
+      const url = `${window.location.origin}${window.location.pathname}?function=${encodeURIComponent(functionExpression)}`;
+      navigator.clipboard.writeText(url).then(() => {
+          setIsLinkCopied(true);
+          setTimeout(() => setIsLinkCopied(false), 2500);
+      });
+  };
 
-export const FilePdfIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M10 11.5v6"></path><path d="M13 11.5a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-3 0v-3A1.5 1.5 0 0 1 13 11.5z"></path><path d="M8.5 18H10"></path></svg>
-);
+  return (
+    <div ref={graphRef} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 h-[400px] md:h-[500px] lg:h-full flex flex-col animate-fade-in">
+      <div className="flex justify-between items-start mb-4">
+        <h2 className="text-lg font-bold text-slate-800">
+          그래프: <span className="font-mono text-indigo-600">y = {functionExpression}</span>
+        </h2>
+        <div className="flex items-center flex-wrap gap-2">
+            <ActionButton 
+                icon={<BookmarkIcon className={`w-4 h-4 ${isSaved ? 'fill-indigo-500' : ''}`} />} 
+                label={isSaved ? '저장됨' : '다시 보기'} 
+                onClick={() => onSaveToHistory(functionExpression)}
+                disabled={isSaved}
+                className={isSaved ? 'text-indigo-600' : ''}
+            />
+            <ActionButton icon={<DownloadIcon className="w-4 h-4"/>} label={isSaving ? '저장중...' : 'PNG'} onClick={handleSaveAsPng} disabled={isSaving} />
+            <ActionButton icon={<FilePdfIcon className="w-4 h-4"/>} label={isSaving ? '저장중...' : 'PDF'} onClick={handleSaveAsPdf} disabled={isSaving} />
+            <ActionButton 
+                icon={<LinkIcon className="w-4 h-4"/>} 
+                label={isLinkCopied ? '복사 완료!' : '링크 복사'} 
+                onClick={handleCopyLink} 
+                className={isLinkCopied ? 'bg-green-100 text-green-700' : ''}
+            />
+        </div>
+      </div>
+      <div className="flex-grow h-full">
+        <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+            data={data}
+            margin={{ top: 5, right: 30, left: 5, bottom: 20 }}
+            >
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis 
+                dataKey="x" type="number" domain={['dataMin', 'dataMax']}
+                tick={{ fill: '#64748b', fontSize: 12 }} 
+                label={{ value: 'x', position: 'insideBottomRight', offset: -10, fill: '#334155' }}
+                axisLine={false} tickLine={false}
+            />
+            <YAxis 
+                tick={{ fill: '#64748b', fontSize: 12 }} 
+                domain={['auto', 'auto']} allowDataOverflow={true}
+                axisLine={false} tickLine={false}
+            />
+            <ReferenceLine y={0} stroke="#94a3b8" strokeWidth={1.5} />
+            <ReferenceLine x={0} stroke="#94a3b8" strokeWidth={1.5} />
+            <Tooltip
+                contentStyle={{
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(4px)', border: '1px solid #e2e8f0',
+                borderRadius: '0.5rem',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                }}
+                labelStyle={{ color: '#1e293b', fontWeight: 'bold' }}
+                formatter={(value: number) => [`${Number(value).toFixed(3)}`, 'y']}
+                labelFormatter={(label: number) => `x = ${Number(label).toFixed(3)}`}
+            />
+            <Legend 
+                verticalAlign="top" align="right"
+                wrapperStyle={{fontSize: "14px", top: "-10px"}}
+                formatter={() => `y = ${functionExpression}`}
+            />
+            <Line type="monotone" dataKey="y" stroke="#4f46e5" strokeWidth={2.5} dot={false} name={functionExpression} connectNulls={false} />
+            </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+};
 
-export const LinkIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>
-);
-
-export const BookmarkIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
-);
-
-export const TrashIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-);
+export default GraphCard;

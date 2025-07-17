@@ -3,7 +3,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { create, all } from 'mathjs';
 import { Header } from './components/Header';
 import { InputCard } from './components/InputCard';
-import { GraphCard } from './components/GraphCard';
+import GraphCard from './components/GraphCard'; // This is changed
 import { AnalysisCard } from './components/AnalysisCard';
 import { Loader } from './components/Loader';
 import { analyzeFunction, extractTextFromImage } from './services/geminiService';
