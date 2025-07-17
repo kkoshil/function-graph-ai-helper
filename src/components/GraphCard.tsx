@@ -2,15 +2,14 @@
 import React, { useRef, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
 import type { PlotPoint } from '../types';
-import { DownloadIcon, FilePdfIcon, LinkIcon, BookmarkIcon } from './icons';
+import { DownloadIcon, FilePdfIcon, LinkIcon } from './icons';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+
 
 interface GraphCardProps {
   functionExpression: string;
   data: PlotPoint[];
-  onSaveToHistory: (expression: string) => void;
-  isSaved: boolean;
 }
 
 const ActionButton: React.FC<{
@@ -33,7 +32,7 @@ const ActionButton: React.FC<{
 );
 
 
-const GraphCard: React.FC<GraphCardProps> = ({ functionExpression, data, onSaveToHistory, isSaved }) => {
+export const GraphCard: React.FC<GraphCardProps> = ({ functionExpression, data }) => {
   const graphRef = useRef<HTMLDivElement>(null);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,7 +45,7 @@ const GraphCard: React.FC<GraphCardProps> = ({ functionExpression, data, onSaveT
             backgroundColor: '#ffffff', 
             useCORS: true,
             logging: false,
-            scale: 2 // Higher resolution
+            scale: 2
         });
         const link = document.createElement('a');
         link.download = `graph_${functionExpression.replace(/[^a-z0-9]/gi, '_')}.png`;
@@ -101,13 +100,6 @@ const GraphCard: React.FC<GraphCardProps> = ({ functionExpression, data, onSaveT
           그래프: <span className="font-mono text-indigo-600">y = {functionExpression}</span>
         </h2>
         <div className="flex items-center flex-wrap gap-2">
-            <ActionButton 
-                icon={<BookmarkIcon className={`w-4 h-4 ${isSaved ? 'fill-indigo-500' : ''}`} />} 
-                label={isSaved ? '저장됨' : '다시 보기'} 
-                onClick={() => onSaveToHistory(functionExpression)}
-                disabled={isSaved}
-                className={isSaved ? 'text-indigo-600' : ''}
-            />
             <ActionButton icon={<DownloadIcon className="w-4 h-4"/>} label={isSaving ? '저장중...' : 'PNG'} onClick={handleSaveAsPng} disabled={isSaving} />
             <ActionButton icon={<FilePdfIcon className="w-4 h-4"/>} label={isSaving ? '저장중...' : 'PDF'} onClick={handleSaveAsPdf} disabled={isSaving} />
             <ActionButton 
@@ -122,26 +114,39 @@ const GraphCard: React.FC<GraphCardProps> = ({ functionExpression, data, onSaveT
         <ResponsiveContainer width="100%" height="100%">
             <LineChart
             data={data}
-            margin={{ top: 5, right: 30, left: 5, bottom: 20 }}
+            margin={{
+                top: 5,
+                right: 30,
+                left: 5,
+                bottom: 20,
+            }}
             >
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis 
-                dataKey="x" type="number" domain={['dataMin', 'dataMax']}
+                dataKey="x" 
+                type="number" 
+                domain={['dataMin', 'dataMax']}
                 tick={{ fill: '#64748b', fontSize: 12 }} 
                 label={{ value: 'x', position: 'insideBottomRight', offset: -10, fill: '#334155' }}
-                axisLine={false} tickLine={false}
+                axisLine={false}
+                tickLine={false}
             />
             <YAxis 
                 tick={{ fill: '#64748b', fontSize: 12 }} 
-                domain={['auto', 'auto']} allowDataOverflow={true}
-                axisLine={false} tickLine={false}
+                domain={['auto', 'auto']}
+                allowDataOverflow={true}
+                axisLine={false}
+                tickLine={false}
             />
+
             <ReferenceLine y={0} stroke="#94a3b8" strokeWidth={1.5} />
             <ReferenceLine x={0} stroke="#94a3b8" strokeWidth={1.5} />
+            
             <Tooltip
                 contentStyle={{
                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                backdropFilter: 'blur(4px)', border: '1px solid #e2e8f0',
+                backdropFilter: 'blur(4px)',
+                border: '1px solid #e2e8f0',
                 borderRadius: '0.5rem',
                 boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
                 }}
@@ -150,7 +155,8 @@ const GraphCard: React.FC<GraphCardProps> = ({ functionExpression, data, onSaveT
                 labelFormatter={(label: number) => `x = ${Number(label).toFixed(3)}`}
             />
             <Legend 
-                verticalAlign="top" align="right"
+                verticalAlign="top" 
+                align="right"
                 wrapperStyle={{fontSize: "14px", top: "-10px"}}
                 formatter={() => `y = ${functionExpression}`}
             />
@@ -161,5 +167,3 @@ const GraphCard: React.FC<GraphCardProps> = ({ functionExpression, data, onSaveT
     </div>
   );
 };
-
-export default GraphCard;

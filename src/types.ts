@@ -16,7 +16,7 @@ export interface AnalysisDetails {
 
 export interface PracticeProblem {
   question: string;
-  answer:string;
+  answer: string;
 }
 
 export interface SuggestedPlotRange {

@@ -3,18 +3,15 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { create, all } from 'mathjs';
 import { Header } from './components/Header';
 import { InputCard } from './components/InputCard';
-import GraphCard from './components/GraphCard'; // This is changed
+import { GraphCard } from './components/GraphCard';
 import { AnalysisCard } from './components/AnalysisCard';
 import { Loader } from './components/Loader';
 import { analyzeFunction, extractTextFromImage } from './services/geminiService';
-import type { FunctionAnalysis, PlotPoint, HistoryEntry } from './types';
+import type { FunctionAnalysis, PlotPoint } from './types';
 import { Welcome } from './components/Welcome';
 import { ErrorAlert } from './components/ErrorAlert';
-import { HistoryCard } from './components/HistoryCard';
-import { Toast } from './components/Toast';
 
 // --- Web Speech API Type Definitions ---
-// This is to add support for a non-standard API
 interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   lang: string;
@@ -88,39 +85,8 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>('');
   const [isInitialAnalysisPending, setIsInitialAnalysisPending] = useState(false);
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-
-  useEffect(() => {
-    try {
-      const savedHistory = localStorage.getItem('functionHistory');
-      if (savedHistory) {
-        setHistory(JSON.parse(savedHistory));
-      }
-    } catch (error) {
-      console.error("Could not load history from localStorage", error);
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('functionHistory', JSON.stringify(history));
-    } catch (error) {
-      console.error("Could not save history to localStorage", error);
-    }
-  }, [history]);
-
-  useEffect(() => {
-    if (toastMessage) {
-      const timer = setTimeout(() => {
-        setToastMessage(null);
-      }, 3000); // Hide after 3 seconds
-      return () => clearTimeout(timer);
-    }
-  }, [toastMessage]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -174,7 +140,7 @@ const App: React.FC = () => {
         const node = math.parse(expression);
         const code = node.compile();
         
-        const step = (range.max - range.min) / 400; // Increased points for smoother curve
+        const step = (range.max - range.min) / 400;
         const Y_AXIS_LIMIT = Math.max(20, Math.abs(range.min), Math.abs(range.max)) * 2;
 
         for (let x = range.min; x <= range.max; x += step) {
@@ -182,16 +148,14 @@ const App: React.FC = () => {
             try {
                 const evaluatedY = code.evaluate({ x });
                 if (!Number.isFinite(evaluatedY)) {
-                    y = null; // Mark as discontinuity for Infinity or NaN
+                    y = null;
                 } else if (Math.abs(evaluatedY) > Y_AXIS_LIMIT) {
-                    // If value exceeds a dynamic threshold, treat as discontinuity to prevent distorted graphs.
                     y = null;
                 }
                 else {
                     y = parseFloat(evaluatedY.toFixed(4));
                 }
             } catch(e) {
-                // Some evaluations might throw an error (e.g. log(-1))
                 y = null;
             }
 
@@ -291,34 +255,6 @@ const App: React.FC = () => {
     }
   }, [isRecording]);
 
-  const handleSaveToHistory = useCallback((expression: string) => {
-    if (history.some(item => item.expression === expression)) {
-      setToastMessage('이미 저장된 함수입니다.');
-      return;
-    }
-    const newEntry: HistoryEntry = {
-      id: Date.now().toString(),
-      expression: expression,
-      date: new Date().toLocaleDateString('ko-KR'),
-    };
-    setHistory(prev => [newEntry, ...prev].slice(0, 10)); // Keep max 10 history items
-    setToastMessage('다시 보기에 저장되었습니다.');
-  }, [history]);
-
-  const handleDeleteFromHistory = useCallback((id: string) => {
-    setHistory(prev => prev.filter(item => item.id !== id));
-    setToastMessage('삭제되었습니다.');
-  }, []);
-
-  const handleLoadFromHistory = useCallback((expression: string) => {
-    setInputValue(expression);
-    // Use a timeout to ensure the state update is processed before triggering analysis
-    setTimeout(() => {
-        handleAnalyze();
-    }, 0);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [handleAnalyze]);
-
 
   return (
     <div className="min-h-screen bg-slate-100/50 text-slate-800">
@@ -336,11 +272,6 @@ const App: React.FC = () => {
               isRecording={isRecording}
               isLoading={isLoading}
             />
-             <HistoryCard 
-                history={history}
-                onLoad={handleLoadFromHistory}
-                onDelete={handleDeleteFromHistory}
-            />
             {error && <ErrorAlert message={error} />}
             {isLoading && (
               <div className="flex justify-center items-center p-8 bg-white rounded-xl shadow-lg">
@@ -356,8 +287,6 @@ const App: React.FC = () => {
               <GraphCard 
                 functionExpression={analysisResult.function} 
                 data={plotPoints}
-                onSaveToHistory={handleSaveToHistory}
-                isSaved={history.some(item => item.expression === analysisResult.function)}
               />
             ) : (
                 !isLoading && !error && <Welcome />
@@ -368,7 +297,6 @@ const App: React.FC = () => {
       <footer className="text-center p-4 text-sm text-slate-500 mt-8">
         <p>&copy; {new Date().getFullYear()} 함수 그래프 AI 도우미. All Rights Reserved.</p>
       </footer>
-      <Toast message={toastMessage} />
     </div>
   );
 };
