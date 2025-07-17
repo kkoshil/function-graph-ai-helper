@@ -76,8 +76,11 @@ export const analyzeFunction = async (expression: string): Promise<FunctionAnaly
       },
     });
 
-    const jsonText = response.text.trim();
-    // The response is now trusted to be valid due to client-side validation and a strict schema.
+    const text = response.text;
+    if (!text) {
+      throw new Error("AI 응답에서 빈 텍스트를 받았습니다. 잠시 후 다시 시도해 주세요.");
+    }
+    const jsonText = text.trim();
     return JSON.parse(jsonText);
 
   } catch (error) {
@@ -113,9 +116,13 @@ export const extractTextFromImage = async (file: File): Promise<string> => {
             model: 'gemini-2.5-flash',
             contents: { parts: [imagePart, textPart] },
         });
-
+        
+        const text = response.text;
+        if (!text) {
+            return ""; // 텍스트가 없으면 빈 문자열 반환
+        }
         // AI가 반환한 텍스트에서 'y=' 부분을 제거
-        return response.text.trim().replace(/^y\s*=\s*/i, '').trim();
+        return text.trim().replace(/^y\s*=\s*/i, '').trim();
     } catch (error) {
         console.error("Error calling Gemini API for OCR:", error);
         throw new Error("이미지에서 수식을 추출하는데 실패했습니다.");
