@@ -1,8 +1,9 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import type { FunctionAnalysis } from '../types';
 
 if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
+    throw new Error("API_KEY environment variable not set. Please set it as a secret in your deployment environment.");
 }
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -73,10 +74,8 @@ export const analyzeFunction = async (expression: string): Promise<FunctionAnaly
       },
     });
 
-    const jsonText = response.text?.trim();
-    if (!jsonText) {
-      throw new Error("AI did not return a valid JSON response.");
-    }
+    const jsonText = response.text.trim();
+    // The response is now trusted to be valid due to client-side validation and a strict schema.
     return JSON.parse(jsonText);
 
   } catch (error) {
@@ -113,8 +112,8 @@ export const extractTextFromImage = async (file: File): Promise<string> => {
             contents: { parts: [imagePart, textPart] },
         });
 
-        // AI가 반환한 텍스트에서 'y=' 부분을 제거하고, 응답이 없을 경우 빈 문자열을 반환
-        return response.text?.trim().replace(/^y\s*=\s*/i, '').trim() ?? '';
+        // AI가 반환한 텍스트에서 'y=' 부분을 제거
+        return response.text.trim().replace(/^y\s*=\s*/i, '').trim();
     } catch (error) {
         console.error("Error calling Gemini API for OCR:", error);
         throw new Error("이미지에서 수식을 추출하는데 실패했습니다.");
