@@ -36,7 +36,6 @@ const App: React.FC = () => {
   const [plotPoints, setPlotPoints] = useState<PlotPoint[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>('');
-  const [isInitialAnalysisPending, setIsInitialAnalysisPending] = useState(false);
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
