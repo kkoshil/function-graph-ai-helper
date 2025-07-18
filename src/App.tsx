@@ -88,6 +88,18 @@ const App: React.FC = () => {
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
+//adsense 광고관련 시작
+useEffect(() => {
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9481442618892258';
+  script.crossOrigin = 'anonymous';
+  document.head.appendChild(script);
+}, []);
+
+
+//광고관련 끝
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const funcFromUrl = params.get('function');
@@ -262,6 +274,21 @@ const App: React.FC = () => {
       <main className="container mx-auto p-4 md:p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-4 space-y-8">
+/////////////////////// ② 상단 광고 - <InputCard /> 위쪽 ///////////////////////
+<div className="my-6 w-full flex justify-center items-center">
+  <ins className="adsbygoogle"
+    style={ display: "block" }
+    data-ad-client="ca-pub-9481442618892258"
+    data-ad-slot="1207051623"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+  <script
+    dangerouslySetInnerHTML={
+      __html: `(adsbygoogle = window.adsbygoogle || []).push({});`,
+    }
+  />
+</div>
+///////////////////////
             <InputCard
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -293,7 +320,41 @@ const App: React.FC = () => {
             )}
           </div>
         </div>
+
+/////////////////////// ② <main> 안쪽에 넣을 광고 블록 ///////////////////////
+
+<div className="my-6">
+  <ins className="adsbygoogle"
+    style={ display: "block" }
+    data-ad-client="ca-pub-9481442618892258"
+    data-ad-slot="1207051623"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+  <script
+    dangerouslySetInnerHTML={
+      __html: `(adsbygoogle = window.adsbygoogle || []).push({});`,
+    }
+  />
+</div>
+
+
       </main>
+/////////////////////// ③ 하단 광고 - <footer /> 바로 위 ///////////////////////
+
+<div className="my-10 w-full flex justify-center items-center">
+  <ins className="adsbygoogle"
+    style={ display: "block" }
+    data-ad-client="ca-pub-9481442618892258"
+    data-ad-slot="6190602236"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+  <script
+    dangerouslySetInnerHTML={
+      __html: `(adsbygoogle = window.adsbygoogle || []).push({});`,
+    }
+  />
+</div>
+///////////////////////
       <footer className="text-center p-4 text-sm text-slate-500 mt-8">
         <p>&copy; {new Date().getFullYear()} 함수 그래프 AI 도우미. All Rights Reserved.</p>
       </footer>
