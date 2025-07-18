@@ -51,7 +51,7 @@ const App: React.FC = () => {
     const funcFromUrl = params.get('function');
     if (funcFromUrl) {
       setInputValue(decodeURIComponent(funcFromUrl));
-      setIsInitialAnalysisPending(true);
+
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
