@@ -1,13 +1,21 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { createHtmlPlugin } from 'vite-plugin-html';
 
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    createHtmlPlugin({
+      inject: {
+        data: {
+          adsenseScript: `
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9481442618892258" crossorigin="anonymous"></script>
+          `,
+        },
+      },
+    }),
+  ],
   define: {
-    // Vercel provides env vars to the build process.
-    // This makes 'process.env.API_KEY' available in the client code.
-    'process.env.API_KEY': JSON.stringify(process.env.API_KEY)
-  }
-})
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
+  },
+});
