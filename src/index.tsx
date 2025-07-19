@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
 import About from './pages/About'; // 👈 소개 페이지 컴포넌트 경로
 // import './index.css'; // 👈 Tailwind 등 기본 스타일 유지
+import FAQ from './pages/FAQ'; // ⬅️ 반드시 필요합니다
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
