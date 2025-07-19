@@ -23,6 +23,10 @@ export const Header: React.FC = () => {
             >
               소개
             </Link>
+
+<Link to="/faq" className="text-slate-500 hover:text-indigo-600 hover:underline">FAQ</Link>
+
+
           </nav>
         </div>
       </div>
