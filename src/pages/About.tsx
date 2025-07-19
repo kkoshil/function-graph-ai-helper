@@ -1,5 +1,6 @@
 // src/pages/About.tsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const About: React.FC = () => {
   return (
@@ -21,6 +22,16 @@ const About: React.FC = () => {
         <p className="mt-6 text-sm text-slate-500">
           © {new Date().getFullYear()} 함수 그래프 AI 도우미. All Rights Reserved.
         </p>
+
+<div className="mt-6 text-center">
+  <Link
+    to="/"
+    className="inline-block px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition"
+  >
+    홈으로 돌아가기
+  </Link>
+</div>
+
       </div>
     </div>
   );
