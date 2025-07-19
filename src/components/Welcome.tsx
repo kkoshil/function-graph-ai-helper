@@ -45,6 +45,16 @@ export const Welcome: React.FC = () => {
       <p className="text-slate-600 mt-6 text-sm text-center">
         본 서비스는 누구나 무료로 사용할 수 있으며, 웹 기반으로 설치 없이 이용할 수 있습니다.
       </p>
+
+<div className="mt-4 text-center">
+  <a
+    href="/about"
+    className="inline-block px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition"
+  >
+    더 자세히 알아보기
+  </a>
+</div>
+
     </div>
   );
 };
