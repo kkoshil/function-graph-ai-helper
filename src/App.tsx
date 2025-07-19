@@ -9,6 +9,7 @@ import { analyzeFunction, extractTextFromImage } from './services/geminiService'
 import type { FunctionAnalysis, PlotPoint } from './types';
 import { Welcome } from './components/Welcome';
 import { ErrorAlert } from './components/ErrorAlert';
+import { Link } from 'react-router-dom'; // ⬅️ 꼭 추가! footer 에 사용
 
 declare global {
   interface Window {
@@ -226,9 +227,15 @@ const App: React.FC = () => {
         </div>
 
       </main>
-      <footer className="text-center p-4 text-sm text-slate-500 mt-8">
-        <p>&copy; {new Date().getFullYear()} 함수 그래프 AI 도우미. All Rights Reserved.</p>
-      </footer>
+<footer className="text-center p-4 text-sm text-slate-500 mt-8">
+  <p>
+    &copy; {new Date().getFullYear()} 함수 그래프 AI 도우미. All Rights Reserved.
+    {' | '}
+    <Link to="/about" className="text-slate-500 hover:text-indigo-600 hover:underline">
+      소개
+    </Link>
+  </p>
+</footer>
     </div>
   );
 };
