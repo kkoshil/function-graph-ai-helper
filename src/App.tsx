@@ -234,6 +234,10 @@ const App: React.FC = () => {
     <Link to="/about" className="text-slate-500 hover:text-indigo-600 hover:underline">
       소개
     </Link>
+    {' | '}
+    <Link to="/faq" className="text-slate-500 hover:text-indigo-600 hover:underline">
+      FAQ
+    </Link>
   </p>
 </footer>
     </div>
