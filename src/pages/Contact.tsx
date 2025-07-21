@@ -1,6 +1,7 @@
 import React from 'react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import { Link } from 'react-router-dom';
 
 const Contact: React.FC = () => {
   return (
@@ -18,15 +19,23 @@ const Contact: React.FC = () => {
             사용자의 피드백은 <span className="font-medium">더 나은 서비스를 만드는 데</span><br />
             큰 도움이 됩니다! 😊
           </p>
-          <div className="text-center">
+
+          {/* 버튼 2개 나란히 배치 */}
+          <div className="flex justify-center gap-4">
             <a
               href="https://docs.google.com/forms/d/e/1FAIpQLSfYeZv477m_CYfCP17gHJTfnGHE9gaIqZe5eE-MFmgWaSh8AA/viewform"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow hover:bg-indigo-600 transition"
+              className="px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow hover:bg-indigo-600 transition"
             >
               📮 문의 폼 열기
             </a>
+            <Link
+              to="/"
+              className="px-6 py-3 bg-slate-200 text-slate-700 font-semibold rounded-lg shadow hover:bg-slate-300 transition"
+            >
+              🏠 홈으로 돌아가기
+            </Link>
           </div>
         </div>
       </main>
