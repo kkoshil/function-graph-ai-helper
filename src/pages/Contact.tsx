@@ -6,8 +6,9 @@ const Contact: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
       <Header />
-      <main className="flex-grow flex justify-center items-start py-16 px-4">
-        <section className="w-full max-w-3xl bg-white shadow-md rounded-xl p-8 sm:p-12">
+	<main className="min-h-screen bg-slate-100 py-10 px-6">
+        <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
+
           <h1 className="text-2xl sm:text-3xl font-bold text-indigo-600 mb-6">문의하기</h1>
           <p className="text-slate-800 leading-relaxed mb-4">
             이 앱에 대한 <strong className="text-indigo-700">개선 제안</strong>이나 <strong className="text-indigo-700">오류 신고</strong>,<br />
