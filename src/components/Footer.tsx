@@ -6,16 +6,12 @@ export const Footer: React.FC = () => {
   return (
     <footer className="bg-slate-50 border-t mt-12 py-6 text-center text-sm text-slate-500">
       {/* 메뉴 링크 */}
-      <nav className="container mx-auto px-4 space-x-2 mb-2">
-        <Link to="/about"    className="hover:text-indigo-600 hover:underline">소개</Link>
-        <span>|</span>
-        <Link to="/faq"      className="hover:text-indigo-600 hover:underline">FAQ</Link>
-        <span>|</span>
-        <Link to="/guide"    className="hover:text-indigo-600 hover:underline">사용 가이드</Link>
-        <span>|</span>
-        <Link to="/examples" className="hover:text-indigo-600 hover:underline">예시 결과</Link>
-        <span>|</span>
-        <Link to="/contact"  className="hover:text-indigo-600 hover:underline">문의하기</Link>
+      <nav className="container mx-auto px-4 flex flex-wrap justify-center gap-3 mb-2">
+        <FooterLink to="/about" label="소개" />
+        <FooterLink to="/faq" label="FAQ" />
+        <FooterLink to="/guide" label="사용 가이드" />
+        <FooterLink to="/examples" label="예시 결과" />
+        <FooterLink to="/contact" label="문의하기" />
       </nav>
 
       {/* 저작권 문구 */}
@@ -25,3 +21,13 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
+
+// 하단 링크에 공통 스타일 적용
+const FooterLink = ({ to, label }: { to: string; label: string }) => (
+  <Link
+    to={to}
+    className="px-2 py-1 text-slate-500 hover:text-indigo-600 border-b-2 border-transparent hover:border-indigo-500 transition-colors duration-200"
+  >
+    {label}
+  </Link>
+);

@@ -1,3 +1,4 @@
+// src/components/Header.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChartIcon } from './icons';
@@ -16,25 +17,28 @@ export const Header: React.FC = () => {
           </Link>
 
           {/* 오른쪽 메뉴 */}
-          <nav className="space-x-6 text-sm">
-            <Link to="/about" className="text-slate-600 hover:text-indigo-600 hover:underline">
-              소개
-            </Link>
-            <Link to="/faq" className="text-slate-600 hover:text-indigo-600 hover:underline">
-              FAQ
-            </Link>
-            <Link to="/guide" className="text-slate-600 hover:text-indigo-600 hover:underline">
-              사용 가이드
-            </Link>
-            <Link to="/examples" className="text-slate-600 hover:text-indigo-600 hover:underline">
-              예시 결과
-            </Link>
-            <Link to="/contact" className="text-slate-600 hover:text-indigo-600 hover:underline">
-              문의하기
-            </Link>
+          <nav className="flex space-x-4 text-sm">
+            {navItems.map(({ to, label }) => (
+              <Link
+                key={to}
+                to={to}
+                className="px-2 py-1 text-slate-600 hover:text-indigo-600 border-b-2 border-transparent hover:border-indigo-500 transition-colors duration-200"
+              >
+                {label}
+              </Link>
+            ))}
           </nav>
         </div>
       </div>
     </header>
   );
 };
+
+// 메뉴 항목 배열
+const navItems = [
+  { to: '/about', label: '소개' },
+  { to: '/faq', label: 'FAQ' },
+  { to: '/guide', label: '사용 가이드' },
+  { to: '/examples', label: '예시 결과' },
+  { to: '/contact', label: '문의하기' },
+];
