@@ -21,7 +21,7 @@ const examples = [
   },
   {
     group: '절댓값/루트 함수',
-    functions: ['y = |x - 2|', 'y = √x', 'y = √(x^2 + 1)']
+    functions: ['y = abs(x - 2)', 'y = root(x)', 'y = root(x^2 + 1)']
   }
 ];
 
