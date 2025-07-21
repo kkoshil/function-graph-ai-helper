@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { create, all } from 'mathjs';
 import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 import { InputCard } from './components/InputCard';
 import { GraphCard } from './components/GraphCard';
 import { AnalysisCard } from './components/AnalysisCard';
@@ -227,19 +228,7 @@ const App: React.FC = () => {
         </div>
 
       </main>
-<footer className="text-center p-4 text-sm text-slate-500 mt-8">
-  <p>
-    &copy; {new Date().getFullYear()} 함수 그래프 AI 도우미. All Rights Reserved.
-    {' | '}
-    <Link to="/about" className="text-slate-500 hover:text-indigo-600 hover:underline">
-      소개
-    </Link>
-    {' | '}
-    <Link to="/faq" className="text-slate-500 hover:text-indigo-600 hover:underline">
-      FAQ
-    </Link>
-  </p>
-</footer>
+      <Footer />
     </div>
   );
 };

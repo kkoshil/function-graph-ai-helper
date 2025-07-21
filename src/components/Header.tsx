@@ -16,17 +16,22 @@ export const Header: React.FC = () => {
           </Link>
 
           {/* 오른쪽 메뉴 */}
-          <nav className="space-x-6">
-            <Link
-              to="/about"
-              className="text-sm text-slate-600 hover:text-indigo-600 hover:underline"
-            >
+          <nav className="space-x-6 text-sm">
+            <Link to="/about" className="text-slate-600 hover:text-indigo-600 hover:underline">
               소개
             </Link>
-
-<Link to="/faq" className="text-slate-500 hover:text-indigo-600 hover:underline">FAQ</Link>
-
-
+            <Link to="/faq" className="text-slate-600 hover:text-indigo-600 hover:underline">
+              FAQ
+            </Link>
+            <Link to="/guide" className="text-slate-600 hover:text-indigo-600 hover:underline">
+              사용 가이드
+            </Link>
+            <Link to="/examples" className="text-slate-600 hover:text-indigo-600 hover:underline">
+              예시 결과
+            </Link>
+            <Link to="/contact" className="text-slate-600 hover:text-indigo-600 hover:underline">
+              문의하기
+            </Link>
           </nav>
         </div>
       </div>
