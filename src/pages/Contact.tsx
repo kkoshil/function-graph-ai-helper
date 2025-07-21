@@ -1,5 +1,8 @@
-// src/pages/Contact.tsx
+// Contact.tsx
 import React from 'react';
-export default function Contact() {
-  return <div className="p-8">📬 Contact 페이지입니다 (준비 중)</div>;
-}
+
+const Contact: React.FC = () => {
+  return <div style={{ padding: '2rem' }}>Contact 페이지 준비 중입니다...</div>;
+};
+
+export default Contact;

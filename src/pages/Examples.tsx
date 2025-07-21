@@ -1,5 +1,8 @@
-// src/pages/Examples.tsx
+// Examples.tsx
 import React from 'react';
-export default function Examples() {
-  return <div className="p-8">📊 Examples 페이지입니다 (준비 중)</div>;
-}
+
+const Examples: React.FC = () => {
+  return <div style={{ padding: '2rem' }}>예시 결과 페이지 준비 중입니다...</div>;
+};
+
+export default Examples;
