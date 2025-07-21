@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
 
 const examples = [
   {
@@ -19,52 +21,56 @@ const examples = [
   },
   {
     group: '절댓값/루트 함수',
-    functions: ['y = abs(x - 2)', 'y = root(x)', 'y = root(x^2 + 1)']
+    functions: ['y = |x - 2|', 'y = √x', 'y = √(x^2 + 1)']
   }
 ];
 
 const Examples: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
   const toggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 py-10 px-6">
-      <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-indigo-600 mb-6 text-center">함수 예시 모음</h1>
+    <>
+      <Header />
 
-        {examples.map((section, index) => (
-          <div key={index} className="mb-4 border border-slate-200 rounded">
-            <button
-              className="w-full text-left px-4 py-3 font-semibold bg-slate-50 hover:bg-slate-100 text-slate-800 transition"
-              onClick={() => toggle(index)}
-            >
-              {section.group}
-            </button>
+      <main className="min-h-screen bg-slate-100 py-10 px-6">
+        <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
+          <h1 className="text-3xl font-bold text-indigo-600 mb-6 text-center">함수 예시 모음</h1>
 
-            {openIndex === index && (
-              <div className="px-4 py-2 bg-white text-slate-700 border-t border-slate-200">
-                <ul className="list-disc pl-6 space-y-1">
-                  {section.functions.map((func, idx) => (
-                    <li key={idx}>
-                      <code className="bg-slate-200 px-2 py-0.5 rounded">{func}</code>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          {examples.map((section, index) => (
+            <div key={index} className="mb-4 border border-slate-200 rounded">
+              <button
+                className="w-full text-left px-4 py-3 font-semibold bg-slate-50 hover:bg-slate-100 text-slate-800 transition"
+                onClick={() => toggle(index)}
+              >
+                {section.group}
+              </button>
+              {openIndex === index && (
+                <div className="px-4 py-2 bg-white text-slate-700 border-t border-slate-200">
+                  <ul className="list-disc pl-6 space-y-1">
+                    {section.functions.map((func, idx) => (
+                      <li key={idx}>
+                        <code className="bg-slate-200 px-2 py-0.5 rounded">{func}</code>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ))}
+
+          <div className="mt-8 text-center">
+            <a href="/" className="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+              홈으로 돌아가기
+            </a>
           </div>
-        ))}
-
-        <div className="mt-8 text-center">
-          <a href="/" className="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-            홈으로 돌아가기
-          </a>
         </div>
-      </div>
-    </div>
+      </main>
+
+      <Footer />
+    </>
   );
 };
 
