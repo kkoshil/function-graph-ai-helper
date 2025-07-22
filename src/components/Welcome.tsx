@@ -1,27 +1,33 @@
 import React from 'react';
 import { ChartIcon } from './icons';
+import { Sparkles, BookOpen, LineChart } from 'lucide-react';
 
 export const Welcome: React.FC = () => {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 flex flex-col items-center justify-center space-y-8 text-left">
+    <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 flex flex-col items-center justify-center space-y-10 text-left">
       <ChartIcon className="w-24 h-24 text-indigo-300 mx-auto" />
 
       <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center">
         함수 그래프 AI 도우미에 오신 것을 환영합니다!
       </h2>
 
-      <p className="text-slate-700 leading-relaxed text-base text-center max-w-2xl">
-        이 사이트는 사용자가 입력한 수학 함수식을 기반으로 자동으로 그래프를 생성하고,
-        해당 함수의 성질을 분석해주는 AI 기반 도우미입니다.
-        <br />
-        초중고 및 대학 수준의 수학 학습을 돕고,
-        수학 교사, 학부모, 자율학습 중인 학생들에게도 매우 유용한 도구입니다.
-      </p>
+      {/* 소개 섹션 */}
+      <div className="flex items-start gap-4 w-full max-w-3xl">
+        <Sparkles className="w-6 h-6 text-indigo-500 mt-1" />
+        <p className="text-slate-700 leading-relaxed text-base">
+          이 사이트는 사용자가 입력한 수학 함수식을 기반으로 자동으로 그래프를 생성하고, 해당 함수의 성질을 분석해주는 AI 기반 도우미입니다.
+          초중고 및 대학 수준의 수학 학습을 돕고, 수학 교사, 학부모, 자율학습 중인 학생들에게도 매우 유용한 도구입니다.
+        </p>
+      </div>
 
-      <div className="bg-slate-50 border rounded-lg p-6 w-full max-w-2xl">
+      {/* 분석 항목 섹션 */}
+      <div className="bg-slate-50 border rounded-lg p-6 w-full max-w-3xl">
+        <div className="flex items-center gap-2 mb-4">
+          <BookOpen className="w-5 h-5 text-indigo-500" />
+          <p className="text-slate-800 font-semibold">예를 들어,</p>
+        </div>
         <p className="text-slate-700 mb-4">
-          예를 들어, <code className="bg-slate-200 px-2 py-0.5 rounded font-mono">y = x^2 - 4x + 3</code> 같은 이차함수를 입력하면
-          아래 정보를 자동 분석합니다:
+          <code className="bg-slate-200 px-2 py-0.5 rounded font-mono">y = x^2 - 4x + 3</code> 같은 이차함수를 입력하면 아래 정보를 자동 분석합니다:
         </p>
         <ul className="list-disc list-inside text-slate-600 space-y-1 pl-2">
           <li>함수의 최고차항 및 차수</li>
@@ -33,8 +39,26 @@ export const Welcome: React.FC = () => {
         </ul>
       </div>
 
-      <div className="bg-slate-100 border rounded-lg p-6 w-full max-w-2xl">
-        <h4 className="font-semibold text-slate-700 mb-2">이렇게 입력해보세요:</h4>
+      {/* 그래프 예시 이미지 */}
+      <div className="w-full max-w-3xl space-y-4">
+        <img
+          src="/example-graph1.png"
+          alt="분수함수 그래프 예시"
+          className="rounded-lg shadow-md w-full"
+        />
+        <img
+          src="/example-graph2.png"
+          alt="이차함수 그래프 예시"
+          className="rounded-lg shadow-md w-full"
+        />
+      </div>
+
+      {/* 입력 예시 섹션 */}
+      <div className="bg-slate-100 border rounded-lg p-6 w-full max-w-3xl">
+        <div className="flex items-center gap-2 mb-2">
+          <LineChart className="w-5 h-5 text-indigo-500" />
+          <h4 className="font-semibold text-slate-700">이렇게 입력해보세요:</h4>
+        </div>
         <ul className="grid sm:grid-cols-2 gap-x-4 list-disc list-inside text-slate-600 text-sm pl-2">
           <li>이차함수: <code className="bg-slate-200 px-1 rounded">x^2 - 4</code></li>
           <li>삼차함수: <code className="bg-slate-200 px-1 rounded">x^3 - 3*x</code></li>
