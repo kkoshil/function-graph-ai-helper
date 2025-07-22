@@ -2,6 +2,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChartIcon } from './icons';
+import {
+  Info,
+  HelpCircle,
+  BookOpenCheck,
+  GalleryVerticalEnd,
+  Mail,
+} from 'lucide-react';
 
 export const Header: React.FC = () => {
   return (
@@ -16,29 +23,26 @@ export const Header: React.FC = () => {
             </h1>
           </Link>
 
-          {/* 오른쪽 메뉴 */}
-          <nav className="flex space-x-4 text-sm">
-            {navItems.map(({ to, label }) => (
-              <Link
-                key={to}
-                to={to}
-                className="px-2 py-1 text-slate-600 hover:text-indigo-600 border-b-2 border-transparent hover:border-indigo-500 transition-colors duration-200"
-              >
-                {label}
-              </Link>
-            ))}
+          {/* 오른쪽 메뉴 (아이콘) */}
+          <nav className="flex items-center space-x-5 text-slate-600">
+            <Link to="/about" className="hover:text-indigo-600" title="소개">
+              <Info className="w-5 h-5" />
+            </Link>
+            <Link to="/faq" className="hover:text-indigo-600" title="FAQ">
+              <HelpCircle className="w-5 h-5" />
+            </Link>
+            <Link to="/guide" className="hover:text-indigo-600" title="사용 가이드">
+              <BookOpenCheck className="w-5 h-5" />
+            </Link>
+            <Link to="/examples" className="hover:text-indigo-600" title="예시 결과">
+              <GalleryVerticalEnd className="w-5 h-5" />
+            </Link>
+            <Link to="/contact" className="hover:text-indigo-600" title="문의하기">
+              <Mail className="w-5 h-5" />
+            </Link>
           </nav>
         </div>
       </div>
     </header>
   );
 };
-
-// 메뉴 항목 배열
-const navItems = [
-  { to: '/about', label: '소개' },
-  { to: '/faq', label: 'FAQ' },
-  { to: '/guide', label: '사용 가이드' },
-  { to: '/examples', label: '예시 결과' },
-  { to: '/contact', label: '문의하기' },
-];
