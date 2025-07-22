@@ -39,17 +39,17 @@ export const Welcome: React.FC = () => {
         </ul>
       </div>
 
-      {/* 그래프 예시 이미지 */}
-      <div className="w-full max-w-3xl space-y-4">
+      {/* 그래프 예시 이미지 - 가로 정렬 */}
+      <div className="w-full max-w-3xl flex flex-col sm:flex-row gap-4">
         <img
           src="/example-graph1.png"
-          alt="분수함수 그래프 예시"
-          className="rounded-lg shadow-md w-full"
+          alt="이차함수 그래프 예시"
+          className="rounded-lg shadow-md w-full sm:w-1/2"
         />
         <img
           src="/example-graph2.png"
-          alt="이차함수 그래프 예시"
-          className="rounded-lg shadow-md w-full"
+          alt="삼각함수 그래프 예시"
+          className="rounded-lg shadow-md w-full sm:w-1/2"
         />
       </div>
 
