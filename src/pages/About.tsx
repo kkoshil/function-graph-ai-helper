@@ -3,7 +3,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
-import { Brain, Mic, Camera, Users, Sparkles, ShieldCheck } from 'lucide-react';
+//import { Brain, Mic, Camera, Users, Sparkles, ShieldCheck } from 'lucide-react';
+import { Mic, Users, Sparkles, ShieldCheck } from 'lucide-react';
 
 const About: React.FC = () => {
   return (
