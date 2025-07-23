@@ -9,7 +9,8 @@ import {
   Users,
   Brain,
   Camera,
-  BarChart3
+  BarChart3,
+  Sparkles
 } from 'lucide-react';
 
 const About: React.FC = () => {
@@ -18,11 +19,14 @@ const About: React.FC = () => {
       <Header />
 
       <main className="flex-grow px-4 py-10">
-        <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-8">
-          <h1 className="text-3xl font-bold text-indigo-600 mb-2">함수 그래프 AI 도우미란?</h1>
+        <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-8">
+          <h1 className="text-3xl font-bold text-indigo-600 mb-2 flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-indigo-500" />
+            함수 그래프 AI 도우미란?
+          </h1>
           <p className="text-slate-700 leading-relaxed">
             <strong className="text-indigo-600">함수 그래프 AI 도우미</strong>는
-            수학 함수식을 입력하면 AI가 자동으로 분석하여 그래프를 그려주고,<br>
+            수학 함수식을 입력하면 AI가 자동으로 분석하여 그래프를 그려주고,
             주요 수학적 특징(극값, 교점, 증가/감소 구간 등)을 시각적으로 보여주는 무료 웹앱입니다.
           </p>
 
