@@ -1,3 +1,4 @@
+// src/pages/Examples.tsx
 import React, { useState } from 'react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
@@ -42,7 +43,9 @@ const Examples: React.FC = () => {
 
       <main className="min-h-screen bg-slate-100 py-10 px-6">
         <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-3xl font-bold text-indigo-600 mb-6">함수 예시 모음</h1>
+          <h1 className="text-3xl font-bold text-indigo-600 mb-6 flex items-center gap-2">
+            📈 함수 예시 모음
+          </h1>
 
           {examples.map((section, index) => (
             <div key={index} className="mb-8 border border-slate-200 rounded">
