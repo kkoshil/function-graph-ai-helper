@@ -6,7 +6,6 @@ import {
   HelpCircle,
   User,
   Lock,
-  Database,
   Code2,
   AlertTriangle,
   Sparkles
