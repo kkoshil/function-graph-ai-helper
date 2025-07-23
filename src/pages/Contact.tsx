@@ -7,7 +7,7 @@ import { Mail, HelpCircle, Home } from 'lucide-react';
 
 const Contact: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col">
+    <div className="flex flex-col min-h-screen bg-slate-100">
       <Header />
 
       <main className="flex-grow px-4 py-10">
@@ -39,7 +39,7 @@ const Contact: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3 mt-6">
+          <div className="flex flex-wrap gap-3 pt-2">
             <a
               href="https://docs.google.com/forms/d/e/1FAIpQLSfYeZv477m_CYfCP17gHJTfnGHE9gaIqZe5eE-MFmgWaSh8AA/viewform"
               target="_blank"
