@@ -4,14 +4,11 @@ import { Link } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import {
-  Brain,
-  Camera,
   Mic,
-  Sparkles,
-  BarChart3,
   ShieldCheck,
   Users
 } from 'lucide-react';
+
 
 const About: React.FC = () => {
   return (
