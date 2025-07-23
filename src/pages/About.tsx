@@ -6,9 +6,11 @@ import { Footer } from '../components/Footer';
 import {
   Mic,
   ShieldCheck,
-  Users
+  Users,
+  Brain,
+  Camera,
+  BarChart3
 } from 'lucide-react';
-
 
 const About: React.FC = () => {
   return (
@@ -16,7 +18,7 @@ const About: React.FC = () => {
       <Header />
 
       <main className="flex-grow px-4 py-10">
-        <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-8">
+        <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-8">
           <h1 className="text-3xl font-bold text-indigo-600 mb-2">함수 그래프 AI 도우미란?</h1>
           <p className="text-slate-700 leading-relaxed">
             <strong className="text-indigo-600">함수 그래프 AI 도우미</strong>는
