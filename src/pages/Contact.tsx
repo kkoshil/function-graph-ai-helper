@@ -10,7 +10,7 @@ const Contact: React.FC = () => {
       <Header />
 
       <main className="flex-grow px-4 py-10">
-        <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8">
+        <div className="max-w-screen-md mx-auto bg-white shadow-md rounded-xl p-8 space-y-6">
           <h1 className="text-3xl font-bold text-indigo-600 flex items-center gap-2 mb-4">
             <Mail className="w-6 h-6" />
             문의하기
