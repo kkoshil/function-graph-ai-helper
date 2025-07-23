@@ -8,6 +8,8 @@ import FAQ from './pages/FAQ'; // ⬅️ 반드시 필요합니다
 import Guide from './pages/Guide'; // ✅ 여기 추가
 import Contact from './pages/Contact';    // contact.tsx는 곧 만들 예정
 import Examples from './pages/Examples';  // examples.tsx도 곧 만들 예정
+import NotFound from './pages/NotFound';
+
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -25,6 +27,7 @@ root.render(
         <Route path="/guide" element={<Guide />} /> {/* ✅ 여기 추가 */}
 	<Route path="/examples" element={<Examples />} />
 	<Route path="/contact" element={<Contact />} />
+	<Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

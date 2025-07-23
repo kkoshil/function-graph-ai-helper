@@ -11,6 +11,7 @@ import type { FunctionAnalysis, PlotPoint } from './types';
 import { Welcome } from './components/Welcome';
 import { ErrorAlert } from './components/ErrorAlert';
 //import { Link } from 'react-router-dom'; // ⬅️ 꼭 추가! footer 에 사용
+//import NotFound from './pages/NotFound';
 
 declare global {
   interface Window {
