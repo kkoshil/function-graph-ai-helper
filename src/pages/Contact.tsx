@@ -10,22 +10,19 @@ const Contact: React.FC = () => {
     <div className="min-h-screen bg-slate-100 flex flex-col">
       <Header />
 
-      <main className="flex-grow py-12 px-4">
-        <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-6">
-          {/* 제목 */}
+      <main className="flex-grow px-4 py-10">
+        <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8 space-y-6">
           <h1 className="text-3xl font-bold text-indigo-600 flex items-center gap-2">
-            <Mail className="w-6 h-6 text-indigo-500" />
+            <Mail className="w-6 h-6" />
             문의하기
           </h1>
 
-          {/* 설명 문단 */}
           <p className="text-slate-700 leading-relaxed">
             이 앱에 대한 <strong className="text-indigo-600">개선 제안</strong>, <strong className="text-indigo-600">오류 신고</strong>,
             또는 <strong className="text-indigo-600">기능 요청</strong>이 있으시다면  
             아래 버튼을 눌러 Google Form을 통해 알려주세요.
           </p>
 
-          {/* 예시 리스트 */}
           <ul className="list-disc list-inside text-slate-700 space-y-1">
             <li>그래프가 제대로 출력되지 않아요</li>
             <li>음성/이미지 인식이 잘 안 돼요</li>
@@ -33,7 +30,6 @@ const Contact: React.FC = () => {
             <li>불편하거나 이상한 점이 있어요</li>
           </ul>
 
-          {/* 안내 메시지 */}
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
             <p className="text-slate-800">
               🙏 사용자님의 피드백은 더 나은 서비스를 만드는 데 정말 큰 도움이 됩니다.
@@ -43,8 +39,7 @@ const Contact: React.FC = () => {
             </p>
           </div>
 
-          {/* 버튼 영역 */}
-          <div className="flex flex-wrap gap-3 pt-2">
+          <div className="flex flex-wrap gap-3 mt-6">
             <a
               href="https://docs.google.com/forms/d/e/1FAIpQLSfYeZv477m_CYfCP17gHJTfnGHE9gaIqZe5eE-MFmgWaSh8AA/viewform"
               target="_blank"
