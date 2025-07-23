@@ -22,7 +22,7 @@ const About: React.FC = () => {
           <h1 className="text-3xl font-bold text-indigo-600 mb-2">함수 그래프 AI 도우미란?</h1>
           <p className="text-slate-700 leading-relaxed">
             <strong className="text-indigo-600">함수 그래프 AI 도우미</strong>는
-            수학 함수식을 입력하면 AI가 자동으로 분석하여 그래프를 그려주고,
+            수학 함수식을 입력하면 AI가 자동으로 분석하여 그래프를 그려주고,<br>
             주요 수학적 특징(극값, 교점, 증가/감소 구간 등)을 시각적으로 보여주는 무료 웹앱입니다.
           </p>
 
