@@ -3,7 +3,8 @@ import React from 'react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { Link } from 'react-router-dom';
-import { LineChart, FunctionSquare, Waves, Divide, TrendingUp, LogIn, SquareRoot, BookOpen } from 'lucide-react';
+//import { LineChart, FunctionSquare, Waves, Divide, TrendingUp, LogIn, SquareRoot, BookOpen } from 'lucide-react';
+import { LineChart, FunctionSquare, Waves, Divide, TrendingUp, LogIn, Radical, BookOpen } from 'lucide-react';
 
 const MathTips: React.FC = () => {
   return (
@@ -96,18 +97,17 @@ const MathTips: React.FC = () => {
             </p>
           </section>
 
-          {/* 섹션7: 무리 함수 */}
-          <section className="bg-slate-50 p-4 rounded-md space-y-2">
-            <div className="flex items-center gap-2 font-semibold text-slate-800">
-              <SquareRoot className="w-5 h-5 text-indigo-500" />
-              <h2 className="text-lg">7. 무리 함수</h2>
-            </div>
-            <p className="text-slate-700">
-              무리 함수는 <code>y = √x</code>, <code>y = √(x^2 + 1)</code> 같은 형태입니다.  
-              정의역에 따라 그래프가 제한되며, 완만하게 증가합니다.  
-              제곱근이 포함된 함수는 항상 정의역을 먼저 확인해야 합니다.
-            </p>
-          </section>
+{/* 섹션7: 무리 함수 */}
+<section className="bg-slate-50 p-4 rounded-md space-y-2">
+  <div className="flex items-center gap-2 font-semibold text-slate-800">
+    <Radical className="w-5 h-5 text-indigo-500" /> {/* ✅ 변경됨 */}
+    <h2 className="text-lg">7. 무리 함수</h2>
+  </div>
+  <p className="text-slate-700">
+    무리 함수는 <code>y = √x</code>, <code>y = √(x^2 + 1)</code> 형태로, 정의역에 따라 그래프가 제한되며 완만하게 증가합니다.
+    제곱근이 포함된 함수는 항상 정의역을 먼저 확인해야 합니다.
+  </p>
+</section>
 
           {/* 내부 링크 */}
           <div className="bg-indigo-50 border rounded-lg p-4">
