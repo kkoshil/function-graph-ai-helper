@@ -8,6 +8,7 @@ import FAQ from './pages/FAQ'; // ⬅️ 반드시 필요합니다
 import Guide from './pages/Guide'; // ✅ 여기 추가
 import Contact from './pages/Contact';    // contact.tsx는 곧 만들 예정
 import Examples from './pages/Examples';  // examples.tsx도 곧 만들 예정
+import Privacy from './pages/Privacy';   // ✅ Privacy 페이지 import
 import NotFound from './pages/NotFound';
 
 
@@ -27,6 +28,7 @@ root.render(
         <Route path="/guide" element={<Guide />} /> {/* ✅ 여기 추가 */}
 	<Route path="/examples" element={<Examples />} />
 	<Route path="/contact" element={<Contact />} />
+	<Route path="/privacy" element={<Privacy />} />   {/* ✅ Privacy 라우트 추가 */}
 	<Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
