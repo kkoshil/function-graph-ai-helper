@@ -8,6 +8,7 @@ import {
   BookOpenCheck,
   GalleryVerticalEnd,
   Mail,
+  Lightbulb // ✅ Math Tips용 아이콘 추가
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -36,6 +37,10 @@ export const Header: React.FC = () => {
             </Link>
             <Link to="/examples" className="hover:text-indigo-600" title="예시 결과">
               <GalleryVerticalEnd className="w-5 h-5" />
+            </Link>
+            {/* ✅ 새 메뉴: 수학 팁 */}
+            <Link to="/math-tips" className="hover:text-indigo-600" title="수학 팁">
+              <Lightbulb className="w-5 h-5" />
             </Link>
             <Link to="/contact" className="hover:text-indigo-600" title="문의하기">
               <Mail className="w-5 h-5" />

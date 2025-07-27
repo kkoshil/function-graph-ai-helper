@@ -11,6 +11,7 @@ export const Footer: React.FC = () => {
         <FooterLink to="/faq" label="FAQ" />
         <FooterLink to="/guide" label="사용 가이드" />
         <FooterLink to="/examples" label="예시 결과" />
+	<FooterLink to="/math-tips" label="수학 팁" /> {/* ✅ Math Tips 메뉴 추가 */}
         <FooterLink to="/contact" label="문의하기" />
         <FooterLink to="/privacy" label="개인정보 처리방침" /> {/* ✅ 추가됨 */}
       </nav>
