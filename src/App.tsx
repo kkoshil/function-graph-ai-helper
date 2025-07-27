@@ -165,7 +165,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-100/50 text-slate-800">
       <Header />
-	<main className="container mx-auto pt-6 pb-10 px-4 md:px-6 lg:px-8">
+	<main className="container mx-auto pt-4 pb-10 px-4 md:px-6 lg:px-8">
 
         {/* ✅ 상단 광고 */}
         <div className="my-6 w-full flex justify-center items-center">
