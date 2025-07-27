@@ -167,7 +167,8 @@ const App: React.FC = () => {
       <Header />
 	<main className="container mx-auto pt-0 pb-10 px-4 md:px-6 lg:px-8">
 
-        {/* ✅ 상단 광고 */}
+	{/* 🚫 상단 광고 제거 → 승인 후 복구 가능 */}
+        {/* 
         <div className="my-6 w-full flex justify-center items-center">
           <ins className="adsbygoogle"
             style={{ display: "block" }}
@@ -181,6 +182,7 @@ const App: React.FC = () => {
             }}
           />
         </div>
+        */}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-4 space-y-8">
