@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChartIcon } from './icons';
-import { Sparkles, BookOpen, LineChart } from 'lucide-react';
+import { Sparkles, BookOpen, LineChart, Info, HelpCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const Welcome: React.FC = () => {
   return (
@@ -14,10 +15,44 @@ export const Welcome: React.FC = () => {
       {/* 소개 섹션 */}
       <div className="flex items-start gap-4 w-full max-w-3xl">
         <Sparkles className="w-6 h-6 text-indigo-500 mt-1" />
-        <p className="text-slate-700 leading-relaxed text-base">
-          이 사이트는 사용자가 입력한 수학 함수식을 기반으로 자동으로 그래프를 생성하고, 해당 함수의 성질을 분석해주는 AI 기반 도우미입니다.
-          초중고 및 대학 수준의 수학 학습을 돕고, 수학 교사, 학부모, 자율학습 중인 학생들에게도 매우 유용한 도구입니다.
+        <div className="space-y-3">
+          <p className="text-slate-700 leading-relaxed text-base">
+            <strong>함수 그래프 AI 도우미</strong>는 사용자가 입력한 수학 함수를
+            AI가 자동으로 분석하여 그래프를 시각화하고, 함수의 성질을 단계별로
+            설명해주는 무료 웹 서비스입니다. 
+            이 도구는 단순히 그래프를 그려주는 것을 넘어, <strong>함수 개념을 깊이 이해하고 문제 해결 능력을 키우는 데 도움</strong>을 줍니다.
+          </p>
+          <p className="text-slate-700 leading-relaxed text-base">
+            특히 수학을 처음 접하는 중학생, 심화 개념을 공부하는 고등학생, 
+            그리고 수업 준비를 하는 교사나 학부모에게도 강력한 학습 도구가 됩니다.
+            이 앱은 브라우저만 있으면 어디서든 실행할 수 있으며, 설치가 필요 없고 사용이 매우 간단합니다.
+          </p>
+          <p className="text-slate-700 leading-relaxed text-base">
+            👉 사용법이 궁금하다면 <Link to="/guide" className="text-indigo-500 underline">사용 가이드</Link>를 확인하고, 
+            다양한 예시는 <Link to="/examples" className="text-indigo-500 underline">함수 예제 페이지</Link>에서 확인해보세요. 
+            또한 <Link to="/faq" className="text-indigo-500 underline">FAQ</Link>에서는 자주 묻는 질문에 대한 답변을 제공합니다.
+          </p>
+        </div>
+      </div>
+
+      {/* 교육적 활용 가치 */}
+      <div className="bg-slate-50 border rounded-lg p-6 w-full max-w-3xl space-y-3">
+        <div className="flex items-center gap-2 mb-2">
+          <Info className="w-5 h-5 text-indigo-500" />
+          <p className="text-slate-800 font-semibold">왜 이 앱이 특별할까요?</p>
+        </div>
+        <p className="text-slate-700">
+          기존의 그래프 계산기와 달리, 이 앱은 단순 계산을 넘어 <strong>AI 기반 분석</strong>을 제공합니다.
+          예를 들어, 입력한 함수에 대해 그래프를 그리는 것뿐만 아니라, 
+          함수의 대칭성, 증가·감소 구간, 극값과 근의 개수, 실생활 활용 예시까지 한 번에 제공합니다. 
+          이러한 분석은 개념 이해를 돕고 수학적 사고력을 높이는 데 큰 역할을 합니다.
         </p>
+        <ul className="list-disc list-inside text-slate-600 pl-2 space-y-1">
+          <li>복잡한 함수도 자동으로 인식하고 시각화</li>
+          <li>문제 풀이에 필요한 핵심 개념을 한눈에 확인</li>
+          <li>실생활 사례와 함께 개념 연결 학습 가능</li>
+          <li>교재, 과제, 수업 준비에 활용 가능</li>
+        </ul>
       </div>
 
       {/* 분석 항목 섹션 */}
@@ -39,7 +74,7 @@ export const Welcome: React.FC = () => {
         </ul>
       </div>
 
-      {/* 그래프 예시 이미지 - 가로 정렬 */}
+      {/* 그래프 예시 이미지 */}
       <div className="w-full max-w-3xl flex flex-col sm:flex-row gap-4">
         <img
           src="/welcome-graph1.png"
@@ -53,7 +88,7 @@ export const Welcome: React.FC = () => {
         />
       </div>
 
-      {/* 입력 예시 섹션 */}
+      {/* 입력 예시 */}
       <div className="bg-slate-100 border rounded-lg p-6 w-full max-w-3xl">
         <div className="flex items-center gap-2 mb-2">
           <LineChart className="w-5 h-5 text-indigo-500" />
@@ -69,8 +104,23 @@ export const Welcome: React.FC = () => {
         </ul>
       </div>
 
+      {/* 학습 가이드 안내 */}
+      <div className="bg-slate-50 border rounded-lg p-6 w-full max-w-3xl">
+        <div className="flex items-center gap-2 mb-2">
+          <HelpCircle className="w-5 h-5 text-indigo-500" />
+          <p className="font-semibold text-slate-700">더 알아보기</p>
+        </div>
+        <p className="text-slate-700 text-sm leading-relaxed">
+          AI 기반 그래프 분석이 처음이신가요? 
+          <Link to="/guide" className="text-indigo-500 underline ml-1">사용 가이드</Link>에서 단계별 안내를 살펴보고, 
+          <Link to="/examples" className="text-indigo-500 underline ml-1">예시 페이지</Link>에서 다양한 함수를 직접 체험해보세요.
+          학습 중 궁금한 점은 언제든 <Link to="/faq" className="text-indigo-500 underline ml-1">FAQ</Link>를 확인할 수 있습니다.
+        </p>
+      </div>
+
       <p className="text-slate-600 mt-4 text-sm text-center max-w-2xl">
-        본 서비스는 누구나 무료로 사용할 수 있으며, 웹 기반으로 설치 없이 이용할 수 있습니다.
+        본 서비스는 누구나 무료로 사용할 수 있으며, 웹 기반으로 설치 없이 간편하게 이용 가능합니다.
+        앞으로 더 다양한 AI 학습 도구도 추가될 예정입니다.
       </p>
 
       <div className="text-center mt-4">
