@@ -8,7 +8,6 @@ import {
   Mic,
   BarChart2,
   Lightbulb,
-  HelpCircle,
   LinkIcon
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
