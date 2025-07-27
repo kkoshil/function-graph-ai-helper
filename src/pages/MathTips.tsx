@@ -15,10 +15,10 @@ const MathTips: React.FC = () => {
         <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-8">
           <h1 className="text-3xl font-bold text-indigo-600 flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-indigo-500" />
-            수학 개념 요약 (Math Tips)
+            주요 함수 개념 요약 (Math Tips)
           </h1>
           <p className="text-slate-700 leading-relaxed">
-            이 페이지에서는 각 함수의 **기본 정의와 핵심 개념**을 간단하게 정리했습니다.  
+            이 페이지에서는 각 함수의 <strong>기본 정의와 핵심 개념</strong>을 간단하게 정리했습니다.  
             학습 중 빠르게 개념을 확인하거나 복습할 때 유용하게 활용할 수 있습니다.
           </p>
 
